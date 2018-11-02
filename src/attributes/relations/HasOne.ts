@@ -95,19 +95,9 @@ export default class HasOne extends Relation {
     const relations = this.mapSingleRelations(relation.get(), this.foreignKey)
 
 
-    if(lazy) return
     collection.forEach((item) => {
-      const handler = {
-        construct: () => {
-          console.debug('monster1 constructor called');
-          // expected output: "monster1 constructor called"
-
-          return relations[item[this.localKey]];
-        }
-      }
-      const related = lazy ? new Proxy([], handler) : relations[item[this.localKey]]
-      // const related = relations[item[this.localKey]]
-
+      const handler = this.lazyHandler(relations, item, this.localKey, null)
+      const related = lazy ? new Proxy({}, handler) : relations[item[this.localKey]]
 
       item[key] = related || null
     })

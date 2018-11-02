@@ -95,7 +95,7 @@ export default class BelongsToMany extends Relation {
   /**
    * Load the belongs to relationship for the record.
    */
-  load (query: Query, collection: Record[], key: string): void {
+  load (query: Query, collection: Record[], key: string, lazy: boolean): void {
     const relatedQuery = this.getRelation(query, this.related.entity)
 
     const pivotQuery = query.newQuery(this.pivot.entity)
@@ -109,7 +109,8 @@ export default class BelongsToMany extends Relation {
     const relateds = this.mapPivotRelations(pivots, relatedQuery)
 
     collection.forEach((item) => {
-      const related = relateds[item[this.parentKey]]
+      const handler = this.lazyHandler(relateds, item, this.parentKey, [])
+      const related = lazy ? new Proxy([], handler) : relateds[item[this.parentKey]]
 
       item[key] = related
     })

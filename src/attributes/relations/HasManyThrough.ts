@@ -85,7 +85,7 @@ export default class HasManyThrough extends Relation {
   /**
    * Load the has many through relationship for the collection.
    */
-  load (query: Query, collection: Record[], key: string): void {
+  load (query: Query, collection: Record[], key: string, lazy: boolean): void {
     const relatedQuery = this.getRelation(query, this.related.entity)
 
     const throughQuery = query.newQuery(this.through.entity)
@@ -99,7 +99,9 @@ export default class HasManyThrough extends Relation {
     const relateds = this.mapThroughRelations(throughs, relatedQuery)
 
     collection.forEach((item) => {
-      const related = relateds[item[this.localKey]]
+
+      const handler = this.lazyHandler(relateds, item, this.localKey, [])
+      const related = lazy ? new Proxy([], handler) : relateds[item[this.localKey]]
 
       item[key] = related || []
     })

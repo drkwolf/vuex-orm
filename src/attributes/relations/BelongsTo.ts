@@ -69,7 +69,7 @@ export default class BelongsTo extends Relation {
   /**
    * Load the belongs to relationship for the collection.
    */
-  load (query: Query, collection: Record[], key: string): void {
+  load (query: Query, collection: Record[], key: string, lazy: boolean): void {
     const relatedQuery = this.getRelation(query, this.parent.entity)
 
     relatedQuery.where(this.ownerKey, this.getKeys(collection, this.foreignKey))
@@ -77,7 +77,8 @@ export default class BelongsTo extends Relation {
     const relations = this.mapSingleRelations(relatedQuery.get(), this.ownerKey)
 
     collection.forEach((item) => {
-      const related = relations[item[this.foreignKey]]
+      const handler = this.lazyHandler(relations, item, this.foreignKey, null)
+      const related = lazy ? new Proxy({}, handler) : relations[item[this.foreignKey]]
 
       item[key] = related || null
     })
