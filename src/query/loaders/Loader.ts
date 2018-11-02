@@ -88,12 +88,23 @@ export default class Loader {
   static eagerLoadRelations (query: Query, collection: Collection): void {
     const fields = query.model.getFields()
 
-    for (const name in query.load) {
-      const relation = fields[name]
+    Object.keys(fields).forEach((field: string) => {
+      const relation = fields[field]
 
       if (relation instanceof Relation) {
-        relation.load(query, collection, name)
+        const lazy = !query.load.hasOwnProperty(field)
+        console.debug('field:', field, 'lazy:', lazy)
+         relation.load(query, collection, field, lazy)
       }
-    }
+
+    })
+
+    // for (const name in query.load) {
+    //   const relation = fields[name]
+
+    //   if (relation instanceof Relation) {
+    //     relation.load(query, collection, name)
+    //   }
+    // }
   }
 }
