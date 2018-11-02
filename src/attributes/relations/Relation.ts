@@ -119,4 +119,33 @@ export default abstract class Relation extends Attribute {
       return new model(record)
     })
   }
+
+  /**
+   *
+   * @param relations
+   * @param item
+   * @param key
+   * @param deflt  default value
+   */
+   lazyHandler(relations: any, item: any, key: string, deflt: any) {
+     return {
+       loadme: () => relations[item[key]],
+       loaded: <boolean>false,
+       items: <any>[],
+       get: function (target: any, prop: any) {
+         if (!this.loaded && target.length === 0) {
+           this.items = this.loadme() || deflt
+           this.loaded = true
+         }
+
+         return this.items[prop]
+       },
+
+       set: function (target: any, key: any, value: any) {
+         if (target.length === 0) target = this.items
+         this.items[key] = value
+         return true
+       }
+     }
+   }
 }
