@@ -87,15 +87,27 @@ export default class HasOne extends Relation {
   /**
    * Load the has one relationship for the collection.
    */
-  load (query: Query, collection: Record[], key: string): void {
+  load (query: Query, collection: Record[], key: string, lazy: boolean): void {
     const relation = this.getRelation(query, this.related.entity)
 
     relation.where(this.foreignKey, this.getKeys(collection, this.localKey))
 
     const relations = this.mapSingleRelations(relation.get(), this.foreignKey)
 
+
+    if(lazy) return
     collection.forEach((item) => {
-      const related = relations[item[this.localKey]]
+      const handler = {
+        construct: () => {
+          console.debug('monster1 constructor called');
+          // expected output: "monster1 constructor called"
+
+          return relations[item[this.localKey]];
+        }
+      }
+      const related = lazy ? new Proxy([], handler) : relations[item[this.localKey]]
+      // const related = relations[item[this.localKey]]
+
 
       item[key] = related || null
     })

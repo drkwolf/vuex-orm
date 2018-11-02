@@ -524,11 +524,16 @@ export default class Query {
       return null
     }
 
-    if (Object.keys(this.load).length > 0) {
+
       item = new this.model(item)
 
       Loader.eagerLoadRelations(this, [item])
-    }
+
+    // if (Object.keys(this.load).length > 0) {
+    //   item = new this.model(item)
+
+    //   Loader.eagerLoadRelations(this, [item])
+    // }
 
     return item
   }

@@ -20,7 +20,7 @@ export default abstract class Relation extends Attribute {
   /**
    * Load relationship records.
    */
-  abstract load (query: Query, collection: Record[], key: string): void
+  abstract load (query: Query, collection: Record[], key: string, lazy?: boolean): void
 
   /**
    * Get relation query instance with constraint attached.
